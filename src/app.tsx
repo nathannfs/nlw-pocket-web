@@ -1,25 +1,21 @@
-import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { CreateGoal } from './components/create-goal'
-// import { EmptyGoals } from './components/empty-goals'
-// import { Summary } from './components/summary'
+import { EmptyGoals } from './components/empty-goals'
+import { Summary } from './components/summary'
 import { Dialog } from './components/ui/dialog'
+import { getSummary } from './http/get-summary'
 
 export function App() {
-  const [count, setCount] = useState(0)
-
-  function increment() {
-    setCount(count + 1)
-  }
+  const { data } = useQuery({
+    queryKey: ['summary'],
+    queryFn: getSummary,
+    // in how many times this data should be cached
+    staleTime: 1000 * 60, // 60 seconds
+  })
 
   return (
     <Dialog>
-      <button type="button" onClick={increment}>
-        Incrementar
-      </button>
-      <h1 className="text-4xl">{count}</h1>
-      {/* <EmptyGoals /> */}
-
-      {/* <Summary /> */}
+      {data?.total && data.total > 0 ? <Summary /> : <EmptyGoals />}
 
       <CreateGoal />
     </Dialog>
